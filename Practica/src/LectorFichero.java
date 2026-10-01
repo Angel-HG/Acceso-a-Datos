@@ -12,26 +12,28 @@ public class LectorFichero {
             System.out.println("Ingrese el nombre del fichero: ");
             ruta = entrada.nextLine();
 
-            //Comprueba que el fichero exista
              archivo = new File("Practica/Ficheros/" + ruta);
              sobreEscribir = true;
 
+             //Comprueba que el fichero no tenga mas de 10000 bytes
              if (archivo.length() > 10000) System.out.println("Fichero inválido, tamaño superior a 10000 bytes");
-
 
         } while (archivo.length() > 10000);
 
+        //Comprueba que el fichero exista
         if (!archivo.exists()) {
             System.out.println("El archivo no existe. ¿Desea crearlo? s/n");
             String opcion = entrada.nextLine().toLowerCase();
             sobreEscribir = false;
 
+            //En caso que el usuario no quiera crear el fichero o responda con cualquier otra cosa termina el programa
             if (!opcion.equals("s")) {
                 System.out.println("Fin");
                 return;
             }
         }
 
+        //Valida el formato del fichero
         else {
             if (!validarFichero(ruta)) {
                 System.out.println("Formato de archivo inválido");
@@ -80,19 +82,27 @@ public class LectorFichero {
 
         br.close();
 
-        String aficiones;
+        String aficion;
 
         do {
             System.out.println("Escriba sus aficiones, separadas por espacios en blanco: ");
-            aficiones = entrada.nextLine().toUpperCase();
+            aficion = entrada.nextLine().toUpperCase();
 
-            if (aficiones.isEmpty()) System.out.println("Cantidad de aficiones inválida. Intentelo de nuevo");
-        } while (aficiones.isEmpty());
+            if (aficion.isEmpty()) System.out.println("Cantidad de aficiones inválida. Intentelo de nuevo");
+        } while (aficion.isEmpty());
+
+        //Ordena alfabéticamente las aficiones
+        String[] aficiones = aficion.split(" ");
+        Arrays.sort(aficiones);
 
         //Escribe el usuario con las aficiones
         try (FileWriter fw = new FileWriter("Practica/Ficheros/" + ruta, sobreEscribir)) {
+            fw.write("\n");
             fw.write("U" + siguienteUsuario + " ");
-            fw.write(aficiones + "\n");
+
+            for (String aficione : aficiones) {
+                fw.write(aficione);
+            }
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -226,8 +236,6 @@ public class LectorFichero {
         //Una vez que ya esta el array con las cooincidencias se ordena
         if (listaCoincidencias.isEmpty()) System.out.println("No existen parejas");
         else ordenarAficiones(listaCoincidencias);
-
-
     }
 
     //Metodo para ordenar y escribir el fichero
@@ -275,7 +283,6 @@ public class LectorFichero {
             while ((linea = br.readLine()) != null) {
                 String[] usuario = linea.split(" ");
 
-
                 //Comprueba que al menos el usuario tenga una afición
                 if (usuario.length < 2) return false;
 
@@ -315,7 +322,6 @@ public class LectorFichero {
             System.out.println(e.getMessage());
             return false;
         }
-
         return true;
     }
 }
